@@ -10,6 +10,11 @@ const io = new Server(httpServer);
 // Serve static files
 app.use(express.static('public'));
 
+// Root route - serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // In-memory room storage (no database!)
 const rooms = new Map();
 
@@ -179,6 +184,13 @@ function generateRoomCode() {
 }
 
 const PORT = process.env.PORT || 3002;
-httpServer.listen(PORT, () => {
-  console.log('🥛 Wobbly Glass server running on port', PORT);
-});
+
+// Only listen if not in Vercel environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  httpServer.listen(PORT, () => {
+    console.log('🥛 Wobbly Glass server running on port', PORT);
+  });
+}
+
+// Export for Vercel
+module.exports = app;
