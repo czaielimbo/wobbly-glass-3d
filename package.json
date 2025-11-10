@@ -1,0 +1,20 @@
+{
+  "name": "wobbly-glass-3d",
+  "version": "1.0.0",
+  "description": "Wobbly Glass 3D - A cute cooperative 3D balance game for 2 players with obstacles",
+  "main": "server.js",
+  "engines": {
+    "node": ">=14.x"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["game", "multiplayer", "cooperative", "3d", "threejs", "websocket"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}

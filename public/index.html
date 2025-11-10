@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🥛 Wobbly Glass 3D - A Cute Balance Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div id="game-container">
+    <div id="ui-overlay">
+      <!-- Start Screen -->
+      <div id="start-screen" class="screen active">
+        <h1>🥛 Wobbly Glass</h1>
+        <p class="subtitle">A cooperative balance game for 2 players</p>
+        <div class="button-group">
+          <button id="create-room-btn" class="game-btn">Create Room 🐱</button>
+          <button id="join-room-btn" class="game-btn">Join Room 🐰</button>
+        </div>
+
+        <div id="join-input" style="display: none;">
+          <input type="text" id="room-code-input" placeholder="Enter room code" maxlength="4">
+          <button id="join-submit-btn" class="game-btn small">Join</button>
+        </div>
+      </div>
+
+      <!-- Waiting Screen -->
+      <div id="waiting-screen" class="screen">
+        <h2>Waiting for Player 2... 🐰</h2>
+        <p class="room-code">Room Code: <span id="room-code-display"></span></p>
+        <p class="instruction">Share this code with your friend!</p>
+      </div>
+
+      <!-- Ready Screen -->
+      <div id="ready-screen" class="screen">
+        <h2>Both Players Ready! 🎉</h2>
+        <p class="instruction">Work together to carry the glass across!</p>
+        <p class="controls">
+          <strong>Controls:</strong><br>
+          Player 1: A / D keys<br>
+          Player 2: ← / → arrow keys
+        </p>
+        <button id="start-game-btn" class="game-btn">Start Game 🍹</button>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="gameover-screen" class="screen">
+        <h2 id="result-title"></h2>
+        <p id="result-message"></p>
+        <button id="play-again-btn" class="game-btn">Play Again</button>
+      </div>
+
+      <!-- HUD during gameplay -->
+      <div id="game-hud" style="display: none;">
+        <div class="hud-item">💧 Water: <span id="water-level">100</span>%</div>
+        <div class="hud-item">📍 Progress: <span id="progress">0</span>%</div>
+        <div class="hud-item">⚠️ Obstacles: <span id="obstacles-dodged">0</span></div>
+      </div>
+    </div>
+
+    <!-- Three.js canvas will be inserted here -->
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
