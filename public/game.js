@@ -212,47 +212,81 @@ function init() {
   tray.position.y = 0;
   scene.add(tray);
 
-  // Glass
+  // Glass - Premium looking with better reflections
   const glassGroup = new THREE.Group();
 
-  const glassGeometry = new THREE.CylinderGeometry(0.4, 0.35, 1.5, 16, 1, true);
+  const glassGeometry = new THREE.CylinderGeometry(0.45, 0.4, 1.8, 32, 1, true);
   const glassMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xc8e6ff,
+    color: 0xe8f4ff,
     transparent: true,
-    opacity: 0.3,
-    roughness: 0.1,
-    metalness: 0.1,
-    transmission: 0.9,
-    thickness: 0.5
+    opacity: 0.15,
+    roughness: 0.05,
+    metalness: 0.0,
+    transmission: 0.98,
+    thickness: 1.0,
+    envMapIntensity: 1.5,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1,
+    ior: 1.5
   });
   const glassMesh = new THREE.Mesh(glassGeometry, glassMaterial);
   glassMesh.castShadow = true;
+  glassMesh.receiveShadow = true;
   glassGroup.add(glassMesh);
 
-  // Glass bottom
-  const bottomGeometry = new THREE.CircleGeometry(0.35, 16);
-  const bottomMaterial = new THREE.MeshStandardMaterial({
-    color: 0xc8e6ff,
+  // Glass rim (thicker top edge)
+  const rimGeometry = new THREE.TorusGeometry(0.45, 0.04, 16, 32);
+  const rimMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xd0e8ff,
     transparent: true,
-    opacity: 0.5
+    opacity: 0.4,
+    roughness: 0.1,
+    metalness: 0.2
+  });
+  const rim = new THREE.Mesh(rimGeometry, rimMaterial);
+  rim.position.y = 0.9;
+  glassGroup.add(rim);
+
+  // Glass bottom
+  const bottomGeometry = new THREE.CircleGeometry(0.4, 32);
+  const bottomMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xe8f4ff,
+    transparent: true,
+    opacity: 0.3,
+    roughness: 0.1,
+    metalness: 0.1
   });
   const bottom = new THREE.Mesh(bottomGeometry, bottomMaterial);
   bottom.rotation.x = -Math.PI / 2;
-  bottom.position.y = -0.75;
+  bottom.position.y = -0.9;
   glassGroup.add(bottom);
 
+  // Sparkle effect on glass edge
+  const sparkleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+  const sparkleMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.8
+  });
+  const sparkle = new THREE.Mesh(sparkleGeometry, sparkleMaterial);
+  sparkle.position.set(0.4, 0.6, 0);
+  glassGroup.add(sparkle);
+
   glass = glassGroup;
-  glass.position.set(0, 1, 0);
+  glass.position.set(0, 1.1, 0);
   tray.add(glass);
 
-  // Water
-  const waterGeometry = new THREE.CylinderGeometry(0.38, 0.33, 1.4, 16);
+  // Water - More vibrant and dynamic
+  const waterGeometry = new THREE.CylinderGeometry(0.43, 0.38, 1.7, 32);
   const waterMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x64c8ff,
+    color: 0x3dbbff,
     transparent: true,
-    opacity: 0.7,
-    roughness: 0.2,
-    metalness: 0.1
+    opacity: 0.8,
+    roughness: 0.1,
+    metalness: 0.2,
+    envMapIntensity: 1.0,
+    clearcoat: 0.5,
+    clearcoatRoughness: 0.2
   });
   water = new THREE.Mesh(waterGeometry, waterMaterial);
   water.position.y = 0;
@@ -296,44 +330,267 @@ function createPathMarkers() {
 }
 
 function createCharacters() {
-  // Create simple 3D character representations
-  const charGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+  // Create cute worker-style characters
 
-  // Cat (left) - pink
-  const catMaterial = new THREE.MeshStandardMaterial({ color: 0xffc0cb });
-  characters.left = new THREE.Mesh(charGeometry, catMaterial);
-  characters.left.castShadow = true;
-  characters.left.position.set(-2, 0.5, 0);
+  // Player 1 (Cat worker) - Left side
+  const catGroup = new THREE.Group();
+
+  // Body
+  const catBodyGeom = new THREE.CapsuleGeometry(0.25, 0.5, 8, 16);
+  const catBodyMat = new THREE.MeshStandardMaterial({ color: 0xff6b9d, roughness: 0.7 });
+  const catBody = new THREE.Mesh(catBodyGeom, catBodyMat);
+  catBody.castShadow = true;
+  catGroup.add(catBody);
+
+  // Head
+  const catHeadGeom = new THREE.SphereGeometry(0.22, 16, 16);
+  const catHeadMat = new THREE.MeshStandardMaterial({ color: 0xffc0cb, roughness: 0.6 });
+  const catHead = new THREE.Mesh(catHeadGeom, catHeadMat);
+  catHead.position.y = 0.5;
+  catHead.castShadow = true;
+  catGroup.add(catHead);
+
+  // Cat ears
+  const earGeom = new THREE.ConeGeometry(0.1, 0.2, 8);
+  const earMat = new THREE.MeshStandardMaterial({ color: 0xff9ab8 });
+  const earLeft = new THREE.Mesh(earGeom, earMat);
+  earLeft.position.set(-0.12, 0.65, 0);
+  earLeft.rotation.z = -0.3;
+  catGroup.add(earLeft);
+
+  const earRight = new THREE.Mesh(earGeom, earMat);
+  earRight.position.set(0.12, 0.65, 0);
+  earRight.rotation.z = 0.3;
+  catGroup.add(earRight);
+
+  // Hard hat (safety first!)
+  const hatGeom = new THREE.CylinderGeometry(0.25, 0.28, 0.15, 16);
+  const hatMat = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.4, metalness: 0.3 });
+  const hat = new THREE.Mesh(hatGeom, hatMat);
+  hat.position.y = 0.7;
+  catGroup.add(hat);
+
+  const hatTopGeom = new THREE.SphereGeometry(0.25, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+  const hatTop = new THREE.Mesh(hatTopGeom, hatMat);
+  hatTop.position.y = 0.78;
+  catGroup.add(hatTop);
+
+  // Arms
+  const armGeom = new THREE.CapsuleGeometry(0.08, 0.4, 6, 10);
+  const armMat = new THREE.MeshStandardMaterial({ color: 0xff6b9d });
+  const armLeft = new THREE.Mesh(armGeom, armMat);
+  armLeft.position.set(-0.35, 0.1, 0);
+  armLeft.rotation.z = 0.5;
+  armLeft.castShadow = true;
+  catGroup.add(armLeft);
+
+  const armRight = new THREE.Mesh(armGeom, armMat);
+  armRight.position.set(0.35, 0.1, 0);
+  armRight.rotation.z = -0.5;
+  armRight.castShadow = true;
+  catGroup.add(armRight);
+
+  characters.left = catGroup;
+  characters.left.position.set(-1.8, 0.6, 0);
   tray.add(characters.left);
 
-  // Bunny (right) - white
-  const bunnyMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  characters.right = new THREE.Mesh(charGeometry, bunnyMaterial);
-  characters.right.castShadow = true;
-  characters.right.position.set(2, 0.5, 0);
+  // Player 2 (Bunny worker) - Right side
+  const bunnyGroup = new THREE.Group();
+
+  // Body
+  const bunnyBodyGeom = new THREE.CapsuleGeometry(0.25, 0.5, 8, 16);
+  const bunnyBodyMat = new THREE.MeshStandardMaterial({ color: 0x87ceeb, roughness: 0.7 });
+  const bunnyBody = new THREE.Mesh(bunnyBodyGeom, bunnyBodyMat);
+  bunnyBody.castShadow = true;
+  bunnyGroup.add(bunnyBody);
+
+  // Head
+  const bunnyHeadGeom = new THREE.SphereGeometry(0.22, 16, 16);
+  const bunnyHeadMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+  const bunnyHead = new THREE.Mesh(bunnyHeadGeom, bunnyHeadMat);
+  bunnyHead.position.y = 0.5;
+  bunnyHead.castShadow = true;
+  bunnyGroup.add(bunnyHead);
+
+  // Bunny ears (long!)
+  const bunnyEarGeom = new THREE.CapsuleGeometry(0.06, 0.35, 6, 10);
+  const bunnyEarMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0 });
+  const bunnyEarLeft = new THREE.Mesh(bunnyEarGeom, bunnyEarMat);
+  bunnyEarLeft.position.set(-0.1, 0.75, 0);
+  bunnyEarLeft.rotation.z = -0.2;
+  bunnyGroup.add(bunnyEarLeft);
+
+  const bunnyEarRight = new THREE.Mesh(bunnyEarGeom, bunnyEarMat);
+  bunnyEarRight.position.set(0.1, 0.75, 0);
+  bunnyEarRight.rotation.z = 0.2;
+  bunnyGroup.add(bunnyEarRight);
+
+  // Hard hat
+  const bunnyHatGeom = new THREE.CylinderGeometry(0.25, 0.28, 0.15, 16);
+  const bunnyHatMat = new THREE.MeshStandardMaterial({ color: 0xff6600, roughness: 0.4, metalness: 0.3 });
+  const bunnyHat = new THREE.Mesh(bunnyHatGeom, bunnyHatMat);
+  bunnyHat.position.y = 0.7;
+  bunnyGroup.add(bunnyHat);
+
+  const bunnyHatTopGeom = new THREE.SphereGeometry(0.25, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+  const bunnyHatTop = new THREE.Mesh(bunnyHatTopGeom, bunnyHatMat);
+  bunnyHatTop.position.y = 0.78;
+  bunnyGroup.add(bunnyHatTop);
+
+  // Arms
+  const bunnyArmLeft = new THREE.Mesh(armGeom, new THREE.MeshStandardMaterial({ color: 0x87ceeb }));
+  bunnyArmLeft.position.set(-0.35, 0.1, 0);
+  bunnyArmLeft.rotation.z = 0.5;
+  bunnyArmLeft.castShadow = true;
+  bunnyGroup.add(bunnyArmLeft);
+
+  const bunnyArmRight = new THREE.Mesh(armGeom, new THREE.MeshStandardMaterial({ color: 0x87ceeb }));
+  bunnyArmRight.position.set(0.35, 0.1, 0);
+  bunnyArmRight.rotation.z = -0.5;
+  bunnyArmRight.castShadow = true;
+  bunnyGroup.add(bunnyArmRight);
+
+  characters.right = bunnyGroup;
+  characters.right.position.set(1.8, 0.6, 0);
   tray.add(characters.right);
 }
 
 function createObstacle(zPos) {
   const obstacleGroup = new THREE.Group();
 
-  // Random obstacle type
-  const type = Math.random() > 0.5 ? 'box' : 'sphere';
-  let obstacleMesh;
+  // Random obstacle type - platformer style!
+  const rand = Math.random();
+  let obstacleType;
 
-  if (type === 'box') {
-    const geometry = new THREE.BoxGeometry(1, 1.5, 1);
-    const material = new THREE.MeshStandardMaterial({ color: 0xff6b9d });
-    obstacleMesh = new THREE.Mesh(geometry, material);
+  if (rand < 0.3) {
+    obstacleType = 'crate'; // Wooden crate
+  } else if (rand < 0.6) {
+    obstacleType = 'barrel'; // Construction barrel
+  } else if (rand < 0.8) {
+    obstacleType = 'cone'; // Traffic cone
   } else {
-    const geometry = new THREE.SphereGeometry(0.6, 16, 16);
-    const material = new THREE.MeshStandardMaterial({ color: 0xc44569 });
-    obstacleMesh = new THREE.Mesh(geometry, material);
+    obstacleType = 'sign'; // Warning sign
   }
 
-  obstacleMesh.castShadow = true;
-  obstacleMesh.position.y = -1;
-  obstacleGroup.add(obstacleMesh);
+  if (obstacleType === 'crate') {
+    // Wooden crate with stripes
+    const crateGeom = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+    const crateMat = new THREE.MeshStandardMaterial({
+      color: 0xd2691e,
+      roughness: 0.9,
+      metalness: 0.1
+    });
+    const crate = new THREE.Mesh(crateGeom, crateMat);
+    crate.castShadow = true;
+
+    // Stripes on crate
+    const stripeGeom = new THREE.BoxGeometry(0.85, 0.15, 0.85);
+    const stripeMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+    const stripe1 = new THREE.Mesh(stripeGeom, stripeMat);
+    stripe1.position.y = 0.25;
+    crate.add(stripe1);
+
+    const stripe2 = new THREE.Mesh(stripeGeom, stripeMat);
+    stripe2.position.y = -0.25;
+    crate.add(stripe2);
+
+    crate.position.y = -0.8;
+    crate.rotation.y = Math.random() * Math.PI;
+    obstacleGroup.add(crate);
+
+  } else if (obstacleType === 'barrel') {
+    // Orange construction barrel
+    const barrelGeom = new THREE.CylinderGeometry(0.35, 0.4, 1.2, 16);
+    const barrelMat = new THREE.MeshStandardMaterial({
+      color: 0xff6600,
+      roughness: 0.7,
+      metalness: 0.2
+    });
+    const barrel = new THREE.Mesh(barrelGeom, barrelMat);
+    barrel.castShadow = true;
+
+    // White stripes
+    const stripeGeom = new THREE.CylinderGeometry(0.36, 0.41, 0.15, 16);
+    const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const stripe1 = new THREE.Mesh(stripeGeom, stripeMat);
+    stripe1.position.y = 0.3;
+    barrel.add(stripe1);
+
+    const stripe2 = new THREE.Mesh(stripeGeom, stripeMat);
+    stripe2.position.y = -0.3;
+    barrel.add(stripe2);
+
+    barrel.position.y = -0.8;
+    obstacleGroup.add(barrel);
+
+  } else if (obstacleType === 'cone') {
+    // Traffic cone
+    const coneGeom = new THREE.ConeGeometry(0.4, 1.0, 16);
+    const coneMat = new THREE.MeshStandardMaterial({
+      color: 0xff4500,
+      roughness: 0.6
+    });
+    const cone = new THREE.Mesh(coneGeom, coneMat);
+    cone.castShadow = true;
+
+    // White stripes
+    const stripeGeom = new THREE.ConeGeometry(0.41, 0.12, 16);
+    const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const stripe1 = new THREE.Mesh(stripeGeom, stripeMat);
+    stripe1.position.y = 0.25;
+    cone.add(stripe1);
+
+    const stripe2 = new THREE.Mesh(stripeGeom, stripeMat);
+    stripe2.position.y = -0.15;
+    cone.add(stripe2);
+
+    // Base
+    const baseGeom = new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16);
+    const baseMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const base = new THREE.Mesh(baseGeom, baseMat);
+    base.position.y = -0.55;
+    cone.add(base);
+
+    cone.position.y = -0.9;
+    obstacleGroup.add(cone);
+
+  } else { // sign
+    // Warning sign
+    const poleGeom = new THREE.CylinderGeometry(0.05, 0.05, 1.2, 8);
+    const poleMat = new THREE.MeshStandardMaterial({ color: 0x888888 });
+    const pole = new THREE.Mesh(poleGeom, poleMat);
+    pole.position.y = -0.8;
+    pole.castShadow = true;
+    obstacleGroup.add(pole);
+
+    // Sign board (diamond shape)
+    const signGeom = new THREE.BoxGeometry(0.7, 0.7, 0.05);
+    const signMat = new THREE.MeshStandardMaterial({
+      color: 0xffcc00,
+      roughness: 0.3,
+      metalness: 0.4
+    });
+    const sign = new THREE.Mesh(signGeom, signMat);
+    sign.rotation.z = Math.PI / 4; // Diamond rotation
+    sign.position.y = -0.3;
+    sign.castShadow = true;
+
+    // Warning symbol (exclamation mark)
+    const warningGeom = new THREE.CapsuleGeometry(0.06, 0.3, 6, 10);
+    const warningMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+    const warningMark = new THREE.Mesh(warningGeom, warningMat);
+    warningMark.position.y = 0.05;
+    warningMark.position.z = 0.03;
+    sign.add(warningMark);
+
+    const dotGeom = new THREE.SphereGeometry(0.06, 8, 8);
+    const dot = new THREE.Mesh(dotGeom, warningMat);
+    dot.position.y = -0.25;
+    dot.position.z = 0.03;
+    sign.add(dot);
+
+    obstacleGroup.add(sign);
+  }
 
   obstacleGroup.position.z = zPos;
   obstacleGroup.userData.passed = false;
@@ -423,8 +680,16 @@ function animate() {
   }
 
   // Character bounce animation
-  characters.left.position.y = 0.5 + Math.sin(waterWobble * 2) * 0.05;
-  characters.right.position.y = 0.5 + Math.cos(waterWobble * 2) * 0.05;
+  characters.left.position.y = 0.6 + Math.sin(waterWobble * 2) * 0.05;
+  characters.right.position.y = 0.6 + Math.cos(waterWobble * 2) * 0.05;
+
+  // Glass sparkle animation
+  const sparkleChild = glass.children.find(child => child.material && child.material.type === 'MeshBasicMaterial');
+  if (sparkleChild) {
+    sparkleChild.material.opacity = 0.6 + Math.sin(waterWobble * 3) * 0.3;
+    sparkleChild.position.x = 0.4 * Math.cos(waterWobble * 0.5);
+    sparkleChild.position.z = 0.4 * Math.sin(waterWobble * 0.5);
+  }
 
   // Update obstacles
   updateObstacles();
