@@ -5,14 +5,19 @@ const path = require('path');
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
 // Serve static files
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Root route - serve index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
 // In-memory room storage (no database!)
@@ -32,7 +37,7 @@ io.on('connection', (socket) => {
         tiltRight: 0,
         trayAngle: 0,
         waterLevel: 100,
-        position: 10, // percentage across screen
+        position: 10,
         isPlaying: false,
         winner: false,
         obstaclesDodged: 0,
@@ -63,12 +68,10 @@ io.on('connection', (socket) => {
     socket.join(roomCode);
     socket.emit('roomJoined', { roomCode, playerNumber: 2 });
 
-    // Notify both players that game can start
     io.to(roomCode).emit('bothPlayersReady');
     console.log('🐰 Player joined room:', roomCode);
   });
 
-  // Start game
   socket.on('startGame', (roomCode) => {
     const room = rooms.get(roomCode);
     if (room && room.players.length === 2) {
@@ -82,7 +85,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle player tilt input
   socket.on('tilt', ({ roomCode, value }) => {
     const room = rooms.get(roomCode);
     if (!room || !room.gameState.isPlaying) return;
@@ -95,28 +97,23 @@ io.on('connection', (socket) => {
       room.gameState.tiltRight = value;
     }
 
-    // Calculate tray angle (balance between both players)
     room.gameState.trayAngle = (room.gameState.tiltLeft + room.gameState.tiltRight) / 2;
 
-    // Spill logic - if tilted too much, lose water
     const tiltAmount = Math.abs(room.gameState.trayAngle);
     if (tiltAmount > 15) {
       room.gameState.waterLevel -= 2;
     }
 
-    // Move forward slowly when balanced
     if (tiltAmount < 10) {
       room.gameState.position += 0.3;
     }
 
-    // Track obstacles dodged (every 10% progress)
     const currentProgress = Math.floor(room.gameState.position / 10);
     if (currentProgress > room.gameState.lastObstacleCheck && tiltAmount < 10) {
       room.gameState.obstaclesDodged++;
       room.gameState.lastObstacleCheck = currentProgress;
     }
 
-    // Check win condition
     if (room.gameState.position >= 90) {
       room.gameState.isPlaying = false;
       room.gameState.winner = true;
@@ -128,7 +125,6 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // Check lose condition
     if (room.gameState.waterLevel <= 0) {
       room.gameState.isPlaying = false;
       room.gameState.winner = false;
@@ -136,20 +132,16 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // Broadcast updated state to both players
     io.to(roomCode).emit('updateGame', room.gameState);
   });
 
-  // Handle obstacle collision
   socket.on('obstacleHit', ({ roomCode }) => {
     const room = rooms.get(roomCode);
     if (!room || !room.gameState.isPlaying) return;
 
-    // Penalty for hitting obstacle
     room.gameState.waterLevel -= 5;
     console.log('⚠️ Obstacle hit! Water level:', room.gameState.waterLevel);
 
-    // Check if game over from obstacle hit
     if (room.gameState.waterLevel <= 0) {
       room.gameState.isPlaying = false;
       room.gameState.winner = false;
@@ -157,11 +149,9 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle disconnect
   socket.on('disconnect', () => {
     console.log('👋 Player disconnected:', socket.id);
 
-    // Find and clean up room
     for (const [code, room] of rooms.entries()) {
       if (room.players.includes(socket.id)) {
         io.to(code).emit('playerLeft');
@@ -173,9 +163,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// Generate random 4-character room code
 function generateRoomCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Easy to read chars
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 4; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -183,14 +172,4 @@ function generateRoomCode() {
   return code;
 }
 
-const PORT = process.env.PORT || 3002;
-
-// Start server (for local development and traditional hosting)
-if (!process.env.VERCEL) {
-  httpServer.listen(PORT, () => {
-    console.log('🥛 Wobbly Glass server running on port', PORT);
-  });
-}
-
-// Export the HTTP server for Vercel (not just app)
 module.exports = httpServer;
