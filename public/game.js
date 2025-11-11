@@ -394,128 +394,268 @@ function createPathMarkers() {
 }
 
 function createCharacters() {
-  // Create cute worker-style characters
+  // Create cute cartoony construction worker characters with facial features
 
-  // Player 1 (Cat worker) - Left side
+  // Player 1 (Cat worker) - Left side - BRIGHT ORANGE
   const catGroup = new THREE.Group();
 
-  // Body (using cylinder instead of capsule for compatibility)
-  const catBodyGeom = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
-  const catBodyMat = new THREE.MeshStandardMaterial({ color: 0xff6b9d, roughness: 0.7 });
+  // Legs
+  const legGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.35, 12);
+  const legMat = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.7 });
+  const catLegLeft = new THREE.Mesh(legGeom, legMat);
+  catLegLeft.position.set(-0.12, -0.4, 0);
+  catLegLeft.castShadow = true;
+  catGroup.add(catLegLeft);
+
+  const catLegRight = new THREE.Mesh(legGeom, legMat);
+  catLegRight.position.set(0.12, -0.4, 0);
+  catLegRight.castShadow = true;
+  catGroup.add(catLegRight);
+
+  // Body - larger and rounder
+  const catBodyGeom = new THREE.SphereGeometry(0.32, 16, 16);
+  const catBodyMat = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.6 });
   const catBody = new THREE.Mesh(catBodyGeom, catBodyMat);
+  catBody.scale.y = 1.2;
+  catBody.position.y = -0.05;
   catBody.castShadow = true;
   catGroup.add(catBody);
 
-  // Head
-  const catHeadGeom = new THREE.SphereGeometry(0.22, 16, 16);
-  const catHeadMat = new THREE.MeshStandardMaterial({ color: 0xffc0cb, roughness: 0.6 });
+  // Head - bigger for cartoony look
+  const catHeadGeom = new THREE.SphereGeometry(0.28, 20, 20);
+  const catHeadMat = new THREE.MeshStandardMaterial({ color: 0xffb366, roughness: 0.5 });
   const catHead = new THREE.Mesh(catHeadGeom, catHeadMat);
-  catHead.position.y = 0.5;
+  catHead.position.y = 0.45;
   catHead.castShadow = true;
   catGroup.add(catHead);
 
-  // Cat ears
-  const earGeom = new THREE.ConeGeometry(0.1, 0.2, 8);
-  const earMat = new THREE.MeshStandardMaterial({ color: 0xff9ab8 });
+  // Cat ears - triangular
+  const earGeom = new THREE.ConeGeometry(0.12, 0.25, 8);
+  const earMat = new THREE.MeshStandardMaterial({ color: 0xff9933 });
   const earLeft = new THREE.Mesh(earGeom, earMat);
-  earLeft.position.set(-0.12, 0.65, 0);
-  earLeft.rotation.z = -0.3;
+  earLeft.position.set(-0.15, 0.65, 0);
+  earLeft.rotation.z = -0.4;
   catGroup.add(earLeft);
 
   const earRight = new THREE.Mesh(earGeom, earMat);
-  earRight.position.set(0.12, 0.65, 0);
-  earRight.rotation.z = 0.3;
+  earRight.position.set(0.15, 0.65, 0);
+  earRight.rotation.z = 0.4;
   catGroup.add(earRight);
 
-  // Hard hat (safety first!)
-  const hatGeom = new THREE.CylinderGeometry(0.25, 0.28, 0.15, 16);
-  const hatMat = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.4, metalness: 0.3 });
+  // Eyes - big cartoony eyes
+  const eyeGeom = new THREE.SphereGeometry(0.08, 12, 12);
+  const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+  const eyeLeft = new THREE.Mesh(eyeGeom, eyeWhiteMat);
+  eyeLeft.position.set(-0.1, 0.5, 0.22);
+  catGroup.add(eyeLeft);
+
+  const eyeRight = new THREE.Mesh(eyeGeom, eyeWhiteMat);
+  eyeRight.position.set(0.1, 0.5, 0.22);
+  catGroup.add(eyeRight);
+
+  // Pupils
+  const pupilGeom = new THREE.SphereGeometry(0.04, 10, 10);
+  const pupilMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const pupilLeft = new THREE.Mesh(pupilGeom, pupilMat);
+  pupilLeft.position.set(-0.1, 0.5, 0.28);
+  catGroup.add(pupilLeft);
+
+  const pupilRight = new THREE.Mesh(pupilGeom, pupilMat);
+  pupilRight.position.set(0.1, 0.5, 0.28);
+  catGroup.add(pupilRight);
+
+  // Nose
+  const noseGeom = new THREE.SphereGeometry(0.05, 12, 12);
+  const noseMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.4 });
+  const nose = new THREE.Mesh(noseGeom, noseMat);
+  nose.position.set(0, 0.42, 0.26);
+  catGroup.add(nose);
+
+  // Mouth/Smile
+  const smileGeom = new THREE.TorusGeometry(0.08, 0.02, 8, 16, Math.PI);
+  const smileMat = new THREE.MeshStandardMaterial({ color: 0x664422 });
+  const smile = new THREE.Mesh(smileGeom, smileMat);
+  smile.position.set(0, 0.35, 0.24);
+  smile.rotation.x = 0.3;
+  catGroup.add(smile);
+
+  // Hard hat - brighter yellow
+  const hatGeom = new THREE.CylinderGeometry(0.3, 0.34, 0.18, 20);
+  const hatMat = new THREE.MeshStandardMaterial({ color: 0xffdd00, roughness: 0.3, metalness: 0.4 });
   const hat = new THREE.Mesh(hatGeom, hatMat);
-  hat.position.y = 0.7;
+  hat.position.y = 0.73;
+  hat.castShadow = true;
   catGroup.add(hat);
 
-  const hatTopGeom = new THREE.SphereGeometry(0.25, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+  const hatTopGeom = new THREE.SphereGeometry(0.3, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
   const hatTop = new THREE.Mesh(hatTopGeom, hatMat);
-  hatTop.position.y = 0.78;
+  hatTop.position.y = 0.82;
   catGroup.add(hatTop);
 
-  // Arms (using cylinder for compatibility)
-  const armGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.4, 8);
-  const armMat = new THREE.MeshStandardMaterial({ color: 0xff6b9d });
-  const armLeft = new THREE.Mesh(armGeom, armMat);
-  armLeft.position.set(-0.35, 0.1, 0);
-  armLeft.rotation.z = 0.5;
-  armLeft.castShadow = true;
-  catGroup.add(armLeft);
+  // Arms - reaching out
+  const armGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.45, 10);
+  const armMat = new THREE.MeshStandardMaterial({ color: 0xff8c00 });
+  const catArmLeft = new THREE.Mesh(armGeom, armMat);
+  catArmLeft.position.set(-0.4, 0.05, 0);
+  catArmLeft.rotation.z = 0.6;
+  catArmLeft.castShadow = true;
+  catGroup.add(catArmLeft);
 
-  const armRight = new THREE.Mesh(armGeom, armMat);
-  armRight.position.set(0.35, 0.1, 0);
-  armRight.rotation.z = -0.5;
-  armRight.castShadow = true;
-  catGroup.add(armRight);
+  const catArmRight = new THREE.Mesh(armGeom, armMat);
+  catArmRight.position.set(0.4, 0.05, 0);
+  catArmRight.rotation.z = -0.6;
+  catArmRight.castShadow = true;
+  catGroup.add(catArmRight);
+
+  // Hands
+  const handGeom = new THREE.SphereGeometry(0.1, 12, 12);
+  const handLeft = new THREE.Mesh(handGeom, new THREE.MeshStandardMaterial({ color: 0xffb366 }));
+  handLeft.position.set(-0.6, -0.1, 0);
+  handLeft.castShadow = true;
+  catGroup.add(handLeft);
+
+  const handRight = new THREE.Mesh(handGeom, new THREE.MeshStandardMaterial({ color: 0xffb366 }));
+  handRight.position.set(0.6, -0.1, 0);
+  handRight.castShadow = true;
+  catGroup.add(handRight);
 
   characters.left = catGroup;
-  characters.left.position.set(-1.8, 0.6, 0);
+  characters.left.position.set(-1.8, 0.8, 0);
   tray.add(characters.left);
 
-  // Player 2 (Bunny worker) - Right side
+  // Player 2 (Bunny worker) - Right side - BRIGHT CYAN/BLUE
   const bunnyGroup = new THREE.Group();
 
-  // Body (using cylinder for compatibility)
-  const bunnyBodyGeom = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
-  const bunnyBodyMat = new THREE.MeshStandardMaterial({ color: 0x87ceeb, roughness: 0.7 });
+  // Legs
+  const bunnyLegLeft = new THREE.Mesh(legGeom, new THREE.MeshStandardMaterial({ color: 0x4db8ff }));
+  bunnyLegLeft.position.set(-0.12, -0.4, 0);
+  bunnyLegLeft.castShadow = true;
+  bunnyGroup.add(bunnyLegLeft);
+
+  const bunnyLegRight = new THREE.Mesh(legGeom, new THREE.MeshStandardMaterial({ color: 0x4db8ff }));
+  bunnyLegRight.position.set(0.12, -0.4, 0);
+  bunnyLegRight.castShadow = true;
+  bunnyGroup.add(bunnyLegRight);
+
+  // Body - rounder
+  const bunnyBodyGeom = new THREE.SphereGeometry(0.32, 16, 16);
+  const bunnyBodyMat = new THREE.MeshStandardMaterial({ color: 0x4db8ff, roughness: 0.6 });
   const bunnyBody = new THREE.Mesh(bunnyBodyGeom, bunnyBodyMat);
+  bunnyBody.scale.y = 1.2;
+  bunnyBody.position.y = -0.05;
   bunnyBody.castShadow = true;
   bunnyGroup.add(bunnyBody);
 
-  // Head
-  const bunnyHeadGeom = new THREE.SphereGeometry(0.22, 16, 16);
-  const bunnyHeadMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+  // Head - fluffy white
+  const bunnyHeadGeom = new THREE.SphereGeometry(0.28, 20, 20);
+  const bunnyHeadMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
   const bunnyHead = new THREE.Mesh(bunnyHeadGeom, bunnyHeadMat);
-  bunnyHead.position.y = 0.5;
+  bunnyHead.position.y = 0.45;
   bunnyHead.castShadow = true;
   bunnyGroup.add(bunnyHead);
 
-  // Bunny ears (long! using cylinder for compatibility)
-  const bunnyEarGeom = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 8);
-  const bunnyEarMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0 });
+  // Long bunny ears
+  const bunnyEarGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.45, 10);
+  const bunnyEarMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f5 });
   const bunnyEarLeft = new THREE.Mesh(bunnyEarGeom, bunnyEarMat);
-  bunnyEarLeft.position.set(-0.1, 0.75, 0);
-  bunnyEarLeft.rotation.z = -0.2;
+  bunnyEarLeft.position.set(-0.12, 0.82, -0.05);
+  bunnyEarLeft.rotation.z = -0.25;
+  bunnyEarLeft.rotation.x = -0.2;
   bunnyGroup.add(bunnyEarLeft);
 
   const bunnyEarRight = new THREE.Mesh(bunnyEarGeom, bunnyEarMat);
-  bunnyEarRight.position.set(0.1, 0.75, 0);
-  bunnyEarRight.rotation.z = 0.2;
+  bunnyEarRight.position.set(0.12, 0.82, -0.05);
+  bunnyEarRight.rotation.z = 0.25;
+  bunnyEarRight.rotation.x = -0.2;
   bunnyGroup.add(bunnyEarRight);
 
-  // Hard hat
-  const bunnyHatGeom = new THREE.CylinderGeometry(0.25, 0.28, 0.15, 16);
-  const bunnyHatMat = new THREE.MeshStandardMaterial({ color: 0xff6600, roughness: 0.4, metalness: 0.3 });
+  // Pink inner ears
+  const innerEarGeom = new THREE.CylinderGeometry(0.05, 0.05, 0.35, 8);
+  const innerEarMat = new THREE.MeshStandardMaterial({ color: 0xffb3d9 });
+  const innerEarLeft = new THREE.Mesh(innerEarGeom, innerEarMat);
+  innerEarLeft.position.set(-0.12, 0.80, -0.03);
+  innerEarLeft.rotation.z = -0.25;
+  innerEarLeft.rotation.x = -0.2;
+  bunnyGroup.add(innerEarLeft);
+
+  const innerEarRight = new THREE.Mesh(innerEarGeom, innerEarMat);
+  innerEarRight.position.set(0.12, 0.80, -0.03);
+  innerEarRight.rotation.z = 0.25;
+  innerEarRight.rotation.x = -0.2;
+  bunnyGroup.add(innerEarRight);
+
+  // Big cute eyes
+  const bunnyEyeLeft = new THREE.Mesh(eyeGeom, eyeWhiteMat);
+  bunnyEyeLeft.position.set(-0.1, 0.5, 0.22);
+  bunnyGroup.add(bunnyEyeLeft);
+
+  const bunnyEyeRight = new THREE.Mesh(eyeGeom, eyeWhiteMat);
+  bunnyEyeRight.position.set(0.1, 0.5, 0.22);
+  bunnyGroup.add(bunnyEyeRight);
+
+  // Pupils
+  const bunnyPupilLeft = new THREE.Mesh(pupilGeom, pupilMat);
+  bunnyPupilLeft.position.set(-0.1, 0.5, 0.28);
+  bunnyGroup.add(bunnyPupilLeft);
+
+  const bunnyPupilRight = new THREE.Mesh(pupilGeom, pupilMat);
+  bunnyPupilRight.position.set(0.1, 0.5, 0.28);
+  bunnyGroup.add(bunnyPupilRight);
+
+  // Pink bunny nose
+  const bunnyNoseGeom = new THREE.SphereGeometry(0.04, 12, 12);
+  const bunnyNoseMat = new THREE.MeshStandardMaterial({ color: 0xff69b4, roughness: 0.4 });
+  const bunnyNose = new THREE.Mesh(bunnyNoseGeom, bunnyNoseMat);
+  bunnyNose.position.set(0, 0.42, 0.26);
+  bunnyGroup.add(bunnyNose);
+
+  // Smile
+  const bunnySmile = new THREE.Mesh(smileGeom, smileMat);
+  bunnySmile.position.set(0, 0.35, 0.24);
+  bunnySmile.rotation.x = 0.3;
+  bunnyGroup.add(bunnySmile);
+
+  // Hard hat - bright green
+  const bunnyHatGeom = new THREE.CylinderGeometry(0.3, 0.34, 0.18, 20);
+  const bunnyHatMat = new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.3, metalness: 0.4 });
   const bunnyHat = new THREE.Mesh(bunnyHatGeom, bunnyHatMat);
-  bunnyHat.position.y = 0.7;
+  bunnyHat.position.y = 0.73;
+  bunnyHat.castShadow = true;
   bunnyGroup.add(bunnyHat);
 
-  const bunnyHatTopGeom = new THREE.SphereGeometry(0.25, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+  const bunnyHatTopGeom = new THREE.SphereGeometry(0.3, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
   const bunnyHatTop = new THREE.Mesh(bunnyHatTopGeom, bunnyHatMat);
-  bunnyHatTop.position.y = 0.78;
+  bunnyHatTop.position.y = 0.82;
   bunnyGroup.add(bunnyHatTop);
 
   // Arms
-  const bunnyArmLeft = new THREE.Mesh(armGeom, new THREE.MeshStandardMaterial({ color: 0x87ceeb }));
-  bunnyArmLeft.position.set(-0.35, 0.1, 0);
-  bunnyArmLeft.rotation.z = 0.5;
+  const bunnyArmGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.45, 10);
+  const bunnyArmMat = new THREE.MeshStandardMaterial({ color: 0x4db8ff });
+  const bunnyArmLeft = new THREE.Mesh(bunnyArmGeom, bunnyArmMat);
+  bunnyArmLeft.position.set(-0.4, 0.05, 0);
+  bunnyArmLeft.rotation.z = 0.6;
   bunnyArmLeft.castShadow = true;
   bunnyGroup.add(bunnyArmLeft);
 
-  const bunnyArmRight = new THREE.Mesh(armGeom, new THREE.MeshStandardMaterial({ color: 0x87ceeb }));
-  bunnyArmRight.position.set(0.35, 0.1, 0);
-  bunnyArmRight.rotation.z = -0.5;
+  const bunnyArmRight = new THREE.Mesh(bunnyArmGeom, bunnyArmMat);
+  bunnyArmRight.position.set(0.4, 0.05, 0);
+  bunnyArmRight.rotation.z = -0.6;
   bunnyArmRight.castShadow = true;
   bunnyGroup.add(bunnyArmRight);
 
+  // Hands
+  const bunnyHandLeft = new THREE.Mesh(handGeom, new THREE.MeshStandardMaterial({ color: 0xffffff }));
+  bunnyHandLeft.position.set(-0.6, -0.1, 0);
+  bunnyHandLeft.castShadow = true;
+  bunnyGroup.add(bunnyHandLeft);
+
+  const bunnyHandRight = new THREE.Mesh(handGeom, new THREE.MeshStandardMaterial({ color: 0xffffff }));
+  bunnyHandRight.position.set(0.6, -0.1, 0);
+  bunnyHandRight.castShadow = true;
+  bunnyGroup.add(bunnyHandRight);
+
   characters.right = bunnyGroup;
-  characters.right.position.set(1.8, 0.6, 0);
+  characters.right.position.set(1.8, 0.8, 0);
   tray.add(characters.right);
 }
 
@@ -744,8 +884,8 @@ function animate() {
   }
 
   // Character bounce animation
-  characters.left.position.y = 0.6 + Math.sin(waterWobble * 2) * 0.05;
-  characters.right.position.y = 0.6 + Math.cos(waterWobble * 2) * 0.05;
+  characters.left.position.y = 0.8 + Math.sin(waterWobble * 2) * 0.05;
+  characters.right.position.y = 0.8 + Math.cos(waterWobble * 2) * 0.05;
 
   // Glass sparkle animation
   const sparkleChild = glass.children.find(child => child.material && child.material.type === 'MeshBasicMaterial');
