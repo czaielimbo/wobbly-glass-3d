@@ -335,8 +335,8 @@ function createCharacters() {
   // Player 1 (Cat worker) - Left side
   const catGroup = new THREE.Group();
 
-  // Body
-  const catBodyGeom = new THREE.CapsuleGeometry(0.25, 0.5, 8, 16);
+  // Body (using cylinder instead of capsule for compatibility)
+  const catBodyGeom = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
   const catBodyMat = new THREE.MeshStandardMaterial({ color: 0xff6b9d, roughness: 0.7 });
   const catBody = new THREE.Mesh(catBodyGeom, catBodyMat);
   catBody.castShadow = true;
@@ -375,8 +375,8 @@ function createCharacters() {
   hatTop.position.y = 0.78;
   catGroup.add(hatTop);
 
-  // Arms
-  const armGeom = new THREE.CapsuleGeometry(0.08, 0.4, 6, 10);
+  // Arms (using cylinder for compatibility)
+  const armGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.4, 8);
   const armMat = new THREE.MeshStandardMaterial({ color: 0xff6b9d });
   const armLeft = new THREE.Mesh(armGeom, armMat);
   armLeft.position.set(-0.35, 0.1, 0);
@@ -397,8 +397,8 @@ function createCharacters() {
   // Player 2 (Bunny worker) - Right side
   const bunnyGroup = new THREE.Group();
 
-  // Body
-  const bunnyBodyGeom = new THREE.CapsuleGeometry(0.25, 0.5, 8, 16);
+  // Body (using cylinder for compatibility)
+  const bunnyBodyGeom = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
   const bunnyBodyMat = new THREE.MeshStandardMaterial({ color: 0x87ceeb, roughness: 0.7 });
   const bunnyBody = new THREE.Mesh(bunnyBodyGeom, bunnyBodyMat);
   bunnyBody.castShadow = true;
@@ -412,8 +412,8 @@ function createCharacters() {
   bunnyHead.castShadow = true;
   bunnyGroup.add(bunnyHead);
 
-  // Bunny ears (long!)
-  const bunnyEarGeom = new THREE.CapsuleGeometry(0.06, 0.35, 6, 10);
+  // Bunny ears (long! using cylinder for compatibility)
+  const bunnyEarGeom = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 8);
   const bunnyEarMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0 });
   const bunnyEarLeft = new THREE.Mesh(bunnyEarGeom, bunnyEarMat);
   bunnyEarLeft.position.set(-0.1, 0.75, 0);
@@ -575,8 +575,8 @@ function createObstacle(zPos) {
     sign.position.y = -0.3;
     sign.castShadow = true;
 
-    // Warning symbol (exclamation mark)
-    const warningGeom = new THREE.CapsuleGeometry(0.06, 0.3, 6, 10);
+    // Warning symbol (exclamation mark - using cylinder for compatibility)
+    const warningGeom = new THREE.CylinderGeometry(0.06, 0.06, 0.3, 8);
     const warningMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
     const warningMark = new THREE.Mesh(warningGeom, warningMat);
     warningMark.position.y = 0.05;
