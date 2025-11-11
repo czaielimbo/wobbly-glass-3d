@@ -36,22 +36,46 @@ const roomCodeDisplay = document.getElementById('room-code-display');
 
 // Button event listeners
 document.getElementById('create-room-btn').addEventListener('click', () => {
-  socket.emit('createRoom');
+  console.log('Create room clicked');
+  if (socket.connected) {
+    socket.emit('createRoom');
+    document.getElementById('create-room-btn').disabled = true;
+    document.getElementById('create-room-btn').textContent = 'Creating...';
+  } else {
+    alert('Connecting to server... Please wait and try again.');
+  }
 });
 
 document.getElementById('join-room-btn').addEventListener('click', () => {
+  console.log('Join room clicked');
   document.getElementById('join-input').style.display = 'flex';
 });
 
 document.getElementById('join-submit-btn').addEventListener('click', () => {
   const code = document.getElementById('room-code-input').value.trim().toUpperCase();
+  console.log('Attempting to join room:', code);
   if (code.length === 4) {
-    socket.emit('joinRoom', code);
+    if (socket.connected) {
+      socket.emit('joinRoom', code);
+      document.getElementById('join-submit-btn').disabled = true;
+      document.getElementById('join-submit-btn').textContent = 'Joining...';
+    } else {
+      alert('Connecting to server... Please wait and try again.');
+    }
+  } else {
+    alert('Please enter a 4-letter room code');
   }
 });
 
 document.getElementById('start-game-btn').addEventListener('click', () => {
-  socket.emit('startGame', roomCode);
+  console.log('Start game clicked for room:', roomCode);
+  if (roomCode) {
+    socket.emit('startGame', roomCode);
+    document.getElementById('start-game-btn').disabled = true;
+    document.getElementById('start-game-btn').textContent = 'Starting...';
+  } else {
+    alert('Room code not found. Please try creating/joining again.');
+  }
 });
 
 document.getElementById('play-again-btn').addEventListener('click', () => {
@@ -59,20 +83,47 @@ document.getElementById('play-again-btn').addEventListener('click', () => {
 });
 
 // Socket event handlers
+socket.on('connect', () => {
+  console.log('✅ Connected to server');
+  const statusEl = document.getElementById('connection-status');
+  if (statusEl) {
+    statusEl.textContent = '✅ Connected';
+    statusEl.className = 'connection-status connected';
+  }
+});
+
+socket.on('disconnect', () => {
+  console.log('❌ Disconnected from server');
+  const statusEl = document.getElementById('connection-status');
+  if (statusEl) {
+    statusEl.textContent = '❌ Disconnected';
+    statusEl.className = 'connection-status disconnected';
+  }
+});
+
 socket.on('roomCreated', (data) => {
+  console.log('Room created:', data);
   roomCode = data.roomCode;
   playerNumber = data.playerNumber;
   roomCodeDisplay.textContent = roomCode;
   showScreen(waitingScreen);
+  // Reset button
+  document.getElementById('create-room-btn').disabled = false;
+  document.getElementById('create-room-btn').textContent = 'Create Room 🐱';
 });
 
 socket.on('roomJoined', (data) => {
+  console.log('Room joined:', data);
   roomCode = data.roomCode;
   playerNumber = data.playerNumber;
   showScreen(readyScreen);
+  // Reset button
+  document.getElementById('join-submit-btn').disabled = false;
+  document.getElementById('join-submit-btn').textContent = 'Join';
 });
 
 socket.on('bothPlayersReady', () => {
+  console.log('Both players ready');
   showScreen(readyScreen);
 });
 
@@ -111,7 +162,20 @@ socket.on('playerLeft', () => {
 });
 
 socket.on('error', (msg) => {
+  console.error('Socket error:', msg);
   alert(msg);
+  // Re-enable buttons on error
+  document.getElementById('create-room-btn').disabled = false;
+  document.getElementById('create-room-btn').textContent = 'Create Room 🐱';
+  document.getElementById('join-submit-btn').disabled = false;
+  document.getElementById('join-submit-btn').textContent = 'Join';
+  document.getElementById('start-game-btn').disabled = false;
+  document.getElementById('start-game-btn').textContent = 'Start Game 🍹';
+});
+
+socket.on('connect_error', (error) => {
+  console.error('Connection error:', error);
+  alert('Failed to connect to server. Please refresh the page.');
 });
 
 // Helper functions
